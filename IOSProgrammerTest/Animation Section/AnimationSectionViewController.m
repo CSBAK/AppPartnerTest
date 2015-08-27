@@ -21,7 +21,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-//    self.startingPoint = self.logoImage.center;
+    self.startingPoint = self.logoImage.center;
     self.logoImage.userInteractionEnabled = YES;
 
     UIPanGestureRecognizer *panRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(gesture:)];
@@ -30,57 +30,34 @@
 }
 
 - (IBAction)spinAction:(id)sender {
-    CABasicAnimation* anim = [CABasicAnimation animationWithKeyPath:@"transform.rotation"];
-    [anim setDuration:1.0f]; // Animation duration to 3 seconds
-    [anim setAutoreverses:NO];
-    [anim setRepeatCount:1]; // Perfrom animation 1 time
-    [anim setFromValue:[NSNumber numberWithDouble:0.0f]];
-    [anim setToValue:[NSNumber numberWithDouble:(M_PI * 2.0f)]];
-    [self.logoImage.layer addAnimation:anim forKey:@"my_rotation"];
+    CABasicAnimation *spin = [CABasicAnimation animationWithKeyPath:@"transform.rotation"];
+    [spin setDuration:1.0f];
+    [spin setAutoreverses:NO];
+    [spin setRepeatCount:1];
+    [spin setFromValue:[NSNumber numberWithDouble:0.0f]];
+    [spin setToValue:[NSNumber numberWithDouble:(M_PI * 2.0f)]];
+    [self.logoImage.layer addAnimation:spin forKey:@"my_rotation"];
     
     NSLog(@"Spinning!");
 }
 - (IBAction)gesture:(UIPanGestureRecognizer *)sender {
     NSLog(@"Touched!");
-    
+
     CGPoint point = [sender locationInView:self.view];
-//    self.logoImage.center = point;
-
-    
-//    CGPoint translation = [sender translationInView:self.view];
-//    CGPoint imageViewPosition = self.logoImage.center;
-//    imageViewPosition.x += translation.x;
-//    imageViewPosition.y += translation.y;
-    
     self.logoImage.center = point;
-    [sender setTranslation:CGPointZero inView:self.view];
 
+        if (CGRectContainsPoint(self.logoImage.frame, point)) {
+            [self.logoImage sizeToFit];
+        }
 
-    if (CGRectContainsPoint(self.logoImage.frame, point)) {
-//        [self.logoImage sizeToFit];
+        if (sender.state == UIGestureRecognizerStateEnded) {
+        [UIImageView animateWithDuration:1.5f animations:^ {
+            self.logoImage.center = self.startingPoint;
+            }];
     }
-//    if (sender.state == UIGestureRecognizerStateEnded) {
-//        [UIImageView animateWithDuration:2.0f animations:^ {
-//            self.logoImage.center = self.startingPoint;
-//
-//        }];
-//    }
 }
 
-
-
-    
-//    [UIView animateWithDuration:1.0 delay:0.0 options:UIViewAnimationOptionTransitionNone
-//                     animations:^
-//     {
-//         CGAffineTransform transform = self.logoImage.transform;
-//         CGAffineTransform transform_new = CGAffineTransformRotate(transform, M_PI);
-//         self.logoImage.transform = transform_new;
-//     } completion:nil];
-
-
-- (IBAction)backAction:(id)sender
-{
+- (IBAction)backAction:(id)sender {
     MainMenuViewController *mainMenuViewController = [[MainMenuViewController alloc] init];
     [self.navigationController pushViewController:mainMenuViewController animated:YES];
 }
